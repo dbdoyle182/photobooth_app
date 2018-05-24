@@ -1,0 +1,19 @@
+{
+  "name": "photobooth_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dbdoyle182/photobooth_app.git"
+  },
+  "author": "Daniel Doyle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dbdoyle182/photobooth_app/issues"
+  },
+  "homepage": "https://github.com/dbdoyle182/photobooth_app#readme"
+}
