@@ -5,8 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Photobooth App</title>
-  <link rel="stylesheet" type="text/css" href="/app/css/photo.css">
+  <link rel="stylesheet" type="text/html" href="./photo.css">
 </head>
+<style>
+  html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 10px;
+  background:#ffc600;
+}
+
+.photobooth {
+  background: white;
+  max-width: 75%;
+  margin: 2rem auto;
+  border-radius:2px;
+}
+
+/*clearfix*/
+.photobooth:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.photo {
+  width:100%;
+  height: 50%;
+  float:left;
+}
+
+.player {
+  position: absolute;
+  top:20px;
+  right: 20px;
+  width:200px;
+}
+
+/*
+  Strip!
+*/
+
+.strip {
+  padding:2rem;
+}
+.strip img {
+  width:100px;
+  overflow-x: scroll;
+  padding:0.8rem 0.8rem 2.5rem 0.8rem;
+  box-shadow:0 0 3px rgba(0,0,0,0.2);
+  background:white;
+  margin-top: 10px;
+}
+
+.strip a:nth-child(5n+1) img { 
+  transition: transform 0.5s ease;
+  transform: rotate(10deg); 
+}
+.strip a:nth-child(5n+2) img { 
+  transition: transform 0.5s ease;
+  transform: rotate(-2deg); 
+}
+.strip a:nth-child(5n+3) img {
+  transition: transform 0.5s ease; 
+  transform: rotate(8deg); 
+}
+.strip a:nth-child(5n+4) img { 
+  transition: transform 0.5s ease;
+  transform: rotate(-11deg); 
+}
+.strip a:nth-child(5n+5) img { 
+  transform: rotate(12deg); 
+  transition: transform 0.5s ease;
+}
+
+.strip a img:hover {
+  transform: rotate(0deg)
+}
+
+</style>
 <body>
 
   <div class="photobooth">
@@ -34,15 +117,18 @@
         <input type="range" min=0 max=255 name="bmax">
       </div>
 
-      <div>
-        <input type="radio" name="filter" id="filterchoice1" value="redeffect">
-        <label for="filterchoice1">Red Effect</label>
+      <div class='filterType'>
+        <input type="radio" name="filter" id="filterchoice1" value="redeffect" onclick="selectFilter('redfilter')">
+        <label for="filterchoice1" class="redfilter">Red Effect</label>
 
-        <input type="radio" name="filter" id="filterchoice2" value="redeffect">
-        <label for="filterchoice1">RGB Split</label>
+        <input type="radio" name="filter" id="filterchoice2" value="rgbsplit" onclick="selectFilter('rgbfilter')">
+        <label for="filterchoice2" class="rgbfilter">RGB Split</label>
 
-        <input type="radio" name="filter" id="filterchoice2" value="redeffect">
-        <label for="filterchoice1">Green Screen</label>
+        <input type="radio" name="filter" id="filterchoice3" value="greenscreen" onclick="selectFilter('greenfilter')">
+        <label for="filterchoice3" class="greenfilter">Green Screen</label>
+
+        <input type="radio" name="filter" id="filterchoice4" value="nothing" onclick="selectFilter('nothing')">
+        <label for="filterchoice3" class="nothing">Normal</label>
       </div>
     </div>
 
@@ -53,7 +139,126 @@
 
   <audio class="snap" src="http://wesbos.com/demos/photobooth/snap.mp3" hidden></audio>
 
-  <script src="../scripts/photo.js"></script>
+<script>
+
+const video = document.querySelector('.player');
+const canvas = document.querySelector('.photo');
+const ctx = canvas.getContext('2d');
+const strip = document.querySelector('.strip');
+const snap = document.querySelector('.snap');
+let filterselection = '';
+
+function getVideo() {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(localMediaStream => {
+            console.log(localMediaStream)
+            video.src = window.URL.createObjectURL(localMediaStream);
+            video.play();
+        })
+        .catch(err => {
+            console.error(`OH NO!!!`, err);
+        })
+}
+
+function selectFilter(selector) {
+  const selection = document.querySelector('.' + selector).innerHTML;
+
+  filterselection = selection
+}
+
+function paintToCanvas() {
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    return setInterval(() => {
+        ctx.drawImage(video, 0, 0, width, height);
+
+        
+        let pixels = ctx.getImageData(0, 0, width, height)
+        switch (filterselection) {
+          case "Red Effect":
+          pixels = redEffect(pixels);
+          break;
+          case "Green Screen":
+          pixels = greenScreen(pixels);
+          break;
+          case "RGB Split":
+          pixels = rgbSplit(pixels);
+          ctx.globalAlpha = 0.8;
+          break;
+          default:
+          break;
+        }
+
+        
+        ctx.putImageData(pixels, 0, 0);
+    }, 16)
+}
+
+function takePhoto() {
+    snap.currentTime = 0;
+    snap.play();
+
+    const data = canvas.toDataURL('image/jpeg');
+    const link = document.createElement(`a`);
+    link.href = data;
+    link.setAttribute('download', 'handsome');
+    link.innerHTML = `<img src="${data}" alt="Hot Stuff" />`
+    strip.insertBefore(link, strip.firstChild);
+}
+
+function redEffect(pixels) {
+    for(let i = 0; i < pixels.data.length; i +=4) {
+        pixels.data[i+0] = pixels.data[i+0] + 300;
+        pixels.data[i+1] = pixels.data[i+1] - 150;
+        pixels.data[i+2] = pixels.data[i+2] * 2;
+    }
+
+    return pixels;
+}
+
+function rgbSplit(pixels) {
+    for (let i = 0; i < pixels.data.length; i+=4) {
+      pixels.data[i - 150] = pixels.data[i + 0]; // RED
+      pixels.data[i + 500] = pixels.data[i + 1]; // GREEN
+      pixels.data[i - 550] = pixels.data[i + 2]; // Blue
+    }
+    return pixels;
+  }
+  
+  function greenScreen(pixels) {
+    const levels = {};
+  
+    document.querySelectorAll('.rgb input').forEach((input) => {
+      levels[input.name] = input.value;
+    });
+  
+    for (i = 0; i < pixels.data.length; i = i + 4) {
+      red = pixels.data[i + 0];
+      green = pixels.data[i + 1];
+      blue = pixels.data[i + 2];
+      alpha = pixels.data[i + 3];
+  
+      if (red >= levels.rmin
+        && green >= levels.gmin
+        && blue >= levels.bmin
+        && red <= levels.rmax
+        && green <= levels.gmax
+        && blue <= levels.bmax) {
+        // take it out!
+        pixels.data[i + 3] = 0;
+      }
+    }
+  
+    return pixels;
+  }
+
+getVideo();
+
+video.addEventListener('canplay', paintToCanvas);
+</script>
 
 </body>
 </html>
