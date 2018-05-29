@@ -4,6 +4,10 @@ A photobooth with a few filters that allows users to save the photos to their de
 
 ## Getting Started
 
+![Photobooth Application](/photobooth.gif)
+
+[Photobooth Application](https://whispering-temple-27601.herokuapp.com/)
+
 1. Copy or fork to your machine
 1. Git clone to a local repository
 1. Run npm install
@@ -12,7 +16,6 @@ A photobooth with a few filters that allows users to save the photos to their de
 ### Prerequisites
 
 * Have node installed globally
-
 
 ## Deployment
 
