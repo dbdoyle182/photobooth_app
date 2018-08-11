@@ -5,95 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Photobooth App</title>
-  <link rel="stylesheet" type="text/html" href="./photo.css">
+  <link rel="stylesheet" type="text/css" href="./photo.css">
 </head>
 <style>
-  html {
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-html {
-  font-size: 10px;
-  background:#ffc600;
-}
-
-.photobooth {
-  background: white;
-  max-width: 75%;
-  margin: 2rem auto;
-  border-radius:2px;
-}
-
-/*clearfix*/
-.photobooth:after {
-  content: '';
-  display: block;
-  clear: both;
-}
-
-.photo {
-  width:100%;
-  height: 50%;
-  float:left;
-}
-
-.player {
-  position: absolute;
-  top:20px;
-  right: 20px;
-  width:200px;
-}
-
-/*
-  Strip!
-*/
-
-.strip {
-  padding:2rem;
-}
-.strip img {
-  width:100px;
-  overflow-x: scroll;
-  padding:0.8rem 0.8rem 2.5rem 0.8rem;
-  box-shadow:0 0 3px rgba(0,0,0,0.2);
-  background:white;
-  margin-top: 10px;
-}
-
-.strip a:nth-child(5n+1) img { 
-  transition: transform 0.5s ease;
-  transform: rotate(10deg); 
-}
-.strip a:nth-child(5n+2) img { 
-  transition: transform 0.5s ease;
-  transform: rotate(-2deg); 
-}
-.strip a:nth-child(5n+3) img {
-  transition: transform 0.5s ease; 
-  transform: rotate(8deg); 
-}
-.strip a:nth-child(5n+4) img { 
-  transition: transform 0.5s ease;
-  transform: rotate(-11deg); 
-}
-.strip a:nth-child(5n+5) img { 
-  transform: rotate(12deg); 
-  transition: transform 0.5s ease;
-}
-
-.strip a img:hover {
-  transform: rotate(0deg)
-}
 
 </style>
 <body>
 
   <div class="photobooth">
-    <video class="player"></video>
+    <video muted="true" autoplay="true" class="player"></video>
     <div class="controls">
       <button onClick="takePhoto()">Take Photo</button>
       <div class="rgb">
@@ -137,9 +57,9 @@ html {
     <div class="strip"></div>
   </div>
 
-  <audio class="snap" src="http://wesbos.com/demos/photobooth/snap.mp3" hidden></audio>
+  <audio class="snap" src="https://wesbos.com/demos/photobooth/snap.mp3" hidden></audio>
 
-<script>
+<!-- <script>
 
 const video = document.querySelector('.player');
 const canvas = document.querySelector('.photo');
@@ -258,7 +178,7 @@ function rgbSplit(pixels) {
 getVideo();
 
 video.addEventListener('canplay', paintToCanvas);
-</script>
-
+</script> -->
+<script src="./photo.js"></script>
 </body>
 </html>

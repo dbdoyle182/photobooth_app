@@ -3,17 +3,23 @@ const canvas = document.querySelector('.photo');
 const ctx = canvas.getContext('2d');
 const strip = document.querySelector('.strip');
 const snap = document.querySelector('.snap');
+let filterselection = '';
 
 function getVideo() {
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(localMediaStream => {
-            console.log(localMediaStream)
-            video.src = window.URL.createObjectURL(localMediaStream);
+            video.srcObject = localMediaStream;
             video.play();
         })
         .catch(err => {
             console.error(`OH NO!!!`, err);
         })
+}
+
+function selectFilter(selector) {
+  const selection = document.querySelector('.' + selector).innerHTML;
+
+  filterselection = selection
 }
 
 function paintToCanvas() {
@@ -25,14 +31,24 @@ function paintToCanvas() {
     return setInterval(() => {
         ctx.drawImage(video, 0, 0, width, height);
 
+        
         let pixels = ctx.getImageData(0, 0, width, height)
+        switch (filterselection) {
+          case "Red Effect":
+          pixels = redEffect(pixels);
+          break;
+          case "Green Screen":
+          pixels = greenScreen(pixels);
+          break;
+          case "RGB Split":
+          pixels = rgbSplit(pixels);
+          ctx.globalAlpha = 0.8;
+          break;
+          default:
+          break;
+        }
 
-        // pixels = redEffect(pixels);
-
-        // pixels = rgbSplit(pixels);
-        // ctx.globalAlpha = 0.8;
-
-        pixels = greenScreen(pixels);
+        
         ctx.putImageData(pixels, 0, 0);
     }, 16)
 }
